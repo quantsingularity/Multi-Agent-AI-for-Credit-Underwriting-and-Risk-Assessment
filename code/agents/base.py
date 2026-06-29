@@ -6,7 +6,7 @@ import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 logging.basicConfig(level=logging.INFO)
@@ -21,9 +21,11 @@ class AgentMessage:
     receiver: str
     msg_type: str  # "request", "response", "error", "info"
     content: Dict[str, Any]
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
     message_id: str = field(
-        default_factory=lambda: f"msg_{datetime.utcnow().timestamp()}"
+        default_factory=lambda: f"msg_{datetime.now(timezone.utc).timestamp()}"
     )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -61,7 +63,9 @@ class DecisionResult:
     evidence: List[Dict[str, Any]] = field(default_factory=list)
     agent_outputs: Dict[str, Any] = field(default_factory=dict)
     fairness_metrics: Dict[str, Any] = field(default_factory=dict)
-    timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+    timestamp: str = field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat()
+    )
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
