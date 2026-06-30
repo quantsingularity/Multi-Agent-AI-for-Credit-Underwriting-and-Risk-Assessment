@@ -91,3 +91,36 @@ celerybeat-schedule.*
 
 # Ruff cache
 .ruff_cache/
+
+# ==========================
+# Experiment outputs
+# ==========================
+
+# Generated figures
+figures/
+
+# Results
+results/
+
+# ==========================
+# Reinforcement Learning
+# ==========================
+
+# Stable Baselines3
+*.zip
+evaluations.npz
+
+# TensorBoard
+tensorboard/
+runs/
+logs/
+events.out.tfevents.*
+
+# Checkpoints
+checkpoints/
+
+# ==========================
+# Misc
+# ==========================
+.DS_Store
+Thumbs.db
