@@ -29,4 +29,4 @@ ENV PYTHONUNBUFFERED=1
 ENV RANDOM_SEED=42
 
 # Default command
-CMD ["python", "-m", "pytest", "code/tests/", "-v"]
+CMD ["python", "-m", "pytest", "credit/tests/", "-v"]

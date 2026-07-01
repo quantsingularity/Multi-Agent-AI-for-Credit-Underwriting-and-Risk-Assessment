@@ -34,7 +34,7 @@ A fully implemented multi-agent system for automated credit underwriting and ris
 
 ## Agentic Workflow
 
-The `LoanSupervisor` (`code/agents/supervisor.py`) orchestrates six sequential steps.
+The `LoanSupervisor` (`credit/agents/supervisor.py`) orchestrates six sequential steps.
 
 | Step                    | Agent              | Function                                                                          |
 | :---------------------- | :----------------- | :-------------------------------------------------------------------------------- |
@@ -49,19 +49,19 @@ The `LoanSupervisor` (`code/agents/supervisor.py`) orchestrates six sequential s
 
 ## Repository Structure
 
-| Path                        | Description                                                  |
-| :-------------------------- | :----------------------------------------------------------- |
-| `code/agents/`              | Supervisor and credit scorer agent logic                     |
-| `code/compliance/`          | Adverse Action Notice generation                             |
-| `code/fairness/`            | Fairness metrics, reweighing, threshold optimization         |
-| `code/data/`                | Deterministic synthetic credit application data generator    |
-| `code/document_processing/` | OCR module for application document extraction               |
-| `code/eval/`                | Model training, agentic system runner, full evaluation suite |
-| `code/monitoring/`          | Data drift and concept drift detection                       |
-| `code/visualization/`       | Fairness trade-off and model performance plots               |
-| `figures/`                  | Generated plots and visualizations                           |
-| `results/`                  | Experiment metrics, fairness reports, synthetic data outputs |
-| `scripts/`                  | Quick demo and figure generation scripts                     |
+| Path                          | Description                                                  |
+| :---------------------------- | :----------------------------------------------------------- |
+| `credit/agents/`              | Supervisor and credit scorer agent logic                     |
+| `credit/compliance/`          | Adverse Action Notice generation                             |
+| `credit/fairness/`            | Fairness metrics, reweighing, threshold optimization         |
+| `credit/data/`                | Deterministic synthetic credit application data generator    |
+| `credit/document_processing/` | OCR module for application document extraction               |
+| `credit/eval/`                | Model training, agentic system runner, full evaluation suite |
+| `credit/monitoring/`          | Data drift and concept drift detection                       |
+| `credit/visualization/`       | Fairness trade-off and model performance plots               |
+| `figures/`                    | Generated plots and visualizations                           |
+| `results/`                    | Experiment metrics, fairness reports, synthetic data outputs |
+| `scripts/`                    | Quick demo, figure generation, and results summary scripts   |
 
 ---
 
@@ -85,12 +85,18 @@ Generates synthetic data, trains the model, and runs a sample evaluation. Result
 ### Full Experiment
 
 ```bash
-docker run --rm -v $(pwd)/results:/app/results credit-agents python code/eval/experiment_runner.py --full
+docker run --rm -v $(pwd)/results:/app/results credit-agents python credit/eval/experiment_runner.py --full
 ```
 
 Estimated runtime: 2 to 4 hours. Runs all fairness mitigation techniques and baselines.
 
 ---
+
+<!-- output-note -->
+
+### Output
+
+Console output stays readable: benign third-party warnings and library progress bars are suppressed, so only meaningful log lines remain. Each run finishes with a clean, aligned summary block reporting the best model by AUC alongside the fairness metrics before and after mitigation.
 
 ## Evaluation
 

@@ -2,22 +2,76 @@
 Generate publication-ready figures from experimental results.
 """
 
-# === stdlib 'code' pin (Python 3.13 pdb compatibility) -- auto-added ===
-import sys as _sys
+import logging as _lg
 
-if not hasattr(_sys.modules.get("code"), "InteractiveConsole"):
-    import importlib.util as _ilu
-    import os as _os
-    import sysconfig as _sc
+# --- keep run output readable: suppress benign third-party noise (auto-added) ---
+import os as _os
+import warnings as _w
 
-    _sp = _sc.get_paths()["stdlib"]
-    _cspec = _ilu.spec_from_file_location("code", _os.path.join(_sp, "code.py"))
-    if _cspec is not None:
-        _cmod = _ilu.module_from_spec(_cspec)
-        _cspec.loader.exec_module(_cmod)
-        _sys.modules["code"] = _cmod
-    del _ilu, _os, _sc, _sp, _cspec
-# === end stdlib 'code' pin ===
+_os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+_os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+_os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+for _m in (
+    r".*does not have valid feature names.*",
+    r".*tight_layout.*",
+    r".*Gym has been unmaintained.*",
+    r".*not wrapped with a ``Monitor``.*",
+):
+    _w.filterwarnings("ignore", message=_m)
+_w.filterwarnings("ignore", category=DeprecationWarning)
+_w.filterwarnings("ignore", category=FutureWarning)
+try:
+    from sklearn.exceptions import ConvergenceWarning as _CW
+
+    _w.filterwarnings("ignore", category=_CW)
+except Exception:
+    pass
+for _n in (
+    "matplotlib",
+    "PIL",
+    "urllib3",
+    "yfinance",
+    "tensorflow",
+    "absl",
+    "gym",
+    "gymnasium",
+    "shap",
+    "numba",
+    "h5py",
+):
+    _lg.getLogger(_n).setLevel(_lg.ERROR)
+
+
+def _silence_tqdm():
+    try:
+        import tqdm.std as _tstd
+
+        _orig = _tstd.tqdm.__init__
+
+        def _init(self, *a, **k):
+            k["disable"] = True
+            _orig(self, *a, **k)
+
+        _tstd.tqdm.__init__ = _init
+        try:
+            from tqdm import auto as _ta
+
+            if _ta.tqdm is not _tstd.tqdm:
+                _o2 = _ta.tqdm.__init__
+
+                def _init2(self, *a, **k):
+                    k["disable"] = True
+                    _o2(self, *a, **k)
+
+                _ta.tqdm.__init__ = _init2
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+
+_silence_tqdm()
+# --- end output cleanup ---
 
 # --- matplotlib/seaborn compatibility shim (auto-added) ---
 # Old seaborn (<0.12) calls matplotlib.cm.register_cmap / get_cmap, removed in

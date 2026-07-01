@@ -3,23 +3,6 @@ Visualization Module for Fairness and Performance Analysis
 Creates publication-ready visualizations for model performance, fairness metrics, and bias analysis.
 """
 
-# === stdlib 'code' pin (Python 3.13 pdb compatibility) -- auto-added ===
-import sys as _sys
-
-if not hasattr(_sys.modules.get("code"), "InteractiveConsole"):
-    import importlib.util as _ilu
-    import os as _os
-    import sysconfig as _sc
-
-    _sp = _sc.get_paths()["stdlib"]
-    _cspec = _ilu.spec_from_file_location("code", _os.path.join(_sp, "code.py"))
-    if _cspec is not None:
-        _cmod = _ilu.module_from_spec(_cspec)
-        _cspec.loader.exec_module(_cmod)
-        _sys.modules["code"] = _cmod
-    del _ilu, _os, _sc, _sp, _cspec
-# === end stdlib 'code' pin ===
-
 # --- matplotlib/seaborn compatibility shim (auto-added) ---
 # Old seaborn (<0.12) calls matplotlib.cm.register_cmap / get_cmap, removed in
 # matplotlib 3.9+. Restore them so seaborn imports and runs on modern matplotlib

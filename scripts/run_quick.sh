@@ -10,7 +10,7 @@ echo "Estimated time: 20-30 minutes"
 echo ""
 
 # Set environment variables
-export PYTHONPATH="${PYTHONPATH}:$(pwd)/code"
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/credit"
 export RANDOM_SEED=42
 export QUICK_MODE=true
 
@@ -48,44 +48,10 @@ echo "[3/5] Generating figures..."
 python3 scripts/generate_figures.py --quick
 
 echo "[4/5] Running tests..."
-python3 -m pytest code/tests/ -v --tb=short || true
+python3 -m pytest credit/tests/ -q -p no:cacheprovider --disable-warnings --tb=short || true
 
 echo "[5/5] Generating summary..."
-python3 -c "
-import json
-with open('results/metrics_summary.json', 'r') as f:
-    results = json.load(f)
-
-print()
-print('=' * 60)
-print('QUICK TEST RESULTS SUMMARY')
-print('=' * 60)
-print()
-print(f\"Dataset: {results['metadata']['n_train']} train, {results['metadata']['n_test']} test\")
-print(f\"Default rate: {results['metadata']['default_rate_test']:.2%}\")
-print()
-print('Model Performance (AUC):')
-for name, metrics in results['baselines'].items():
-    print(f\"  {name:20s}: {metrics['auc']:.4f}\")
-print()
-print('Fairness (Baseline):')
-fairness = results['fairness']['baseline']
-print(f\"  Passed: {fairness['passed']}\")
-for attr, metrics in fairness['metrics'].items():
-    if 'demographic_parity_diff' in metrics:
-        print(f\"  {attr} DP diff: {metrics['demographic_parity_diff']:.4f}\")
-print()
-print('Fairness (After Mitigation):')
-fairness_mit = results['fairness']['reweighing']
-print(f\"  Passed: {fairness_mit['passed']}\")
-for attr, metrics in fairness_mit['metrics'].items():
-    if 'demographic_parity_diff' in metrics:
-        print(f\"  {attr} DP diff: {metrics['demographic_parity_diff']:.4f}\")
-print()
-print('=' * 60)
-print('Quick test complete! Check results/ and figures/ directories.')
-print('=' * 60)
-"
+python3 scripts/print_summary.py
 
 echo ""
 echo "✓ Quick test complete!"

@@ -3,6 +3,77 @@ Evaluation Framework for Multi-Agent Credit Underwriting System
 Runs experiments, computes metrics, performs statistical tests, and generates results.
 """
 
+import logging as _lg
+
+# --- keep run output readable: suppress benign third-party noise (auto-added) ---
+import os as _os
+import warnings as _w
+
+_os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+_os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+_os.environ.setdefault("GRPC_VERBOSITY", "ERROR")
+for _m in (
+    r".*does not have valid feature names.*",
+    r".*tight_layout.*",
+    r".*Gym has been unmaintained.*",
+    r".*not wrapped with a ``Monitor``.*",
+):
+    _w.filterwarnings("ignore", message=_m)
+_w.filterwarnings("ignore", category=DeprecationWarning)
+_w.filterwarnings("ignore", category=FutureWarning)
+try:
+    from sklearn.exceptions import ConvergenceWarning as _CW
+
+    _w.filterwarnings("ignore", category=_CW)
+except Exception:
+    pass
+for _n in (
+    "matplotlib",
+    "PIL",
+    "urllib3",
+    "yfinance",
+    "tensorflow",
+    "absl",
+    "gym",
+    "gymnasium",
+    "shap",
+    "numba",
+    "h5py",
+):
+    _lg.getLogger(_n).setLevel(_lg.ERROR)
+
+
+def _silence_tqdm():
+    try:
+        import tqdm.std as _tstd
+
+        _orig = _tstd.tqdm.__init__
+
+        def _init(self, *a, **k):
+            k["disable"] = True
+            _orig(self, *a, **k)
+
+        _tstd.tqdm.__init__ = _init
+        try:
+            from tqdm import auto as _ta
+
+            if _ta.tqdm is not _tstd.tqdm:
+                _o2 = _ta.tqdm.__init__
+
+                def _init2(self, *a, **k):
+                    k["disable"] = True
+                    _o2(self, *a, **k)
+
+                _ta.tqdm.__init__ = _init2
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+
+_silence_tqdm()
+# --- end output cleanup ---
+
 import json
 import logging
 from pathlib import Path
